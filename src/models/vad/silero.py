@@ -13,7 +13,7 @@ class SileroVAD(BaseVAD):
         self.__read_audio = utils[2]
 
     def _get_boundaries(
-        self, audio_path: str, *args, **kwargs
+        self, audio_path: str, merge_th: int = None, *args, **kwargs
     ) -> list[tuple[float, float]]:
         """
         args
@@ -26,5 +26,9 @@ class SileroVAD(BaseVAD):
         list with boundaries (speech segments in seconds)
         """
         waveform = self.__read_audio(audio_path)
-        boundaries = self.__get_speech_timestamps(waveform, self.__model)
-        return [(item["start"] / 10000, item["end"] / 10000) for item in boundaries]
+        boundaries = self.__get_speech_timestamps(waveform, self.__model, return_seconds=True)
+        boundaries = [(item["start"], item["end"]) for item in boundaries]
+        if merge_th:
+            boundaries = self._merge_boundaries(boundaries=boundaries, close_th=merge_th)
+
+        return boundaries

@@ -22,4 +22,5 @@ class ZffVAD(BaseVAD):
         boundaries = zff_vad(waveform, sr)
         boundaries = utils.smooth_decision(boundaries, sr)
         segments = utils.sample2time(waveform, sr, boundaries)
-        return [(item[0], item[1]) for item in segments]
+        segments = [(item[0], item[1]) for item in segments]
+        return self._merge_boundaries(boundaries=segments, close_th=150)
