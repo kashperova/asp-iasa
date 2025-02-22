@@ -60,6 +60,7 @@ class EnergyVAD(BaseVAD):
         return self.__to_boundaries(waveform, vad, sr)
 
     def __compute_energy(self, waveform: np.ndarray, sr: int) -> np.ndarray:
+        # todo: loudness normalization, low-pass filter
         # compute sample numbers of frame length and frame shift
         frame_len = self.window * sr // 1000
         frame_shift = self.shift * sr // 1000
@@ -88,4 +89,4 @@ class EnergyVAD(BaseVAD):
         if start is not None:  # handle case when speech continues to the end
             boundaries.append((start, round(len(waveform) / sr, 4)))
 
-        return boundaries
+        return  self._merge_boundaries(boundaries=boundaries, close_th=150)
