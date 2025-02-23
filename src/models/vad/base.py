@@ -35,7 +35,9 @@ class BaseVAD(metaclass=Singleton):
         return [{"start": start, "end": end} for start, end in boundaries]
 
     @staticmethod
-    def _merge_boundaries(close_th: int, boundaries: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    def _merge_boundaries(
+        close_th: int, boundaries: list[tuple[float, float]]
+    ) -> list[tuple[float, float]]:
         """
         Merge final speech boundaries
 

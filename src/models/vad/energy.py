@@ -1,92 +1,72 @@
+import librosa
 import numpy as np
-from scipy.io import wavfile
 
 from models.vad.base import BaseVAD
 
 
 class EnergyVAD(BaseVAD):
-    def __init__(
-        self,
-        window: int = 25,
-        shift: int = 20,
-        pre_emphasis: float = 0.95,
-        energy_th: float = 0.05,
-    ):
-        """
-        args
-        ---------
-        window: int
-            frame length in milliseconds
-
-        shift: int
-            frame shift in milliseconds
-
-        pre_emphasis: float
-            pre-emphasis factor
-
-        energy_th: float
-            threshold for vad predictions
-        """
+    def __init__(self, low_energy: float = 4.0):
         super().__init__()
-        self.window = window
-        self.shift = shift
-        self.pre_emphasis = pre_emphasis
-        self.energy_th = energy_th
+        self.low_energy = low_energy
 
-    def _get_boundaries(self, audio_path: str, *args) -> list[tuple[float, float]]:
-        """
-        N.B. Energy VAD  works only with mono channel audio
-
-        args
-        ---------
-        audio_path: str
-            path to .wav file
-
-        returns
-        ---------
-        list with boundaries (speech segments in seconds)
-        """
-        sr, waveform = wavfile.read(audio_path)
-        # pre-emphasis (high-pass filter)
-        waveform = np.append(
-            waveform[0], waveform[1:] - self.pre_emphasis * waveform[:-1]
-        )
-        # compute energy
-        energy = self.__compute_energy(waveform, sr)
-        # apply energy threshold
-        vad = np.zeros(energy.shape)
-        vad[energy > self.energy_th] = 1
-
-        return self.__to_boundaries(waveform, vad, sr)
-
-    def __compute_energy(self, waveform: np.ndarray, sr: int) -> np.ndarray:
-        # todo: loudness normalization, low-pass filter
-        # compute sample numbers of frame length and frame shift
-        frame_len = self.window * sr // 1000
-        frame_shift = self.shift * sr // 1000
-
-        energy = np.zeros((waveform.shape[0] - frame_len + frame_shift) // frame_shift)
-        for i in range(energy.shape[0]):
-            energy[i] = np.sum(
-                waveform[i * frame_shift : i * frame_shift + frame_len] ** 2
-            )
-
-        return energy
-
-    def __to_boundaries(
-        self, waveform: np.ndarray, vad: np.ndarray, sr: int
+    def _get_boundaries(
+        self, audio_path: str, close_th: int = 450, *args
     ) -> list[tuple[float, float]]:
-        boundaries, start = [], None
+        waveform, sr = librosa.load(audio_path, sr=None)
 
-        for i, v in enumerate(vad):
-            time = round(i * self.shift / sr, 4)
-            if v == 1 and start is None:
-                start = time
-            elif v == 0 and start is not None:
-                boundaries.append((start, time))
-                start = None
+        # split the signal into frames and compute energy and decisions
+        frame_length = int(np.ceil(0.010 * sr))  # 10 ms
+        frame_overlap = int(np.ceil(0.005 * sr))  # 5 ms
+        frames = self.__buffer_waveform(waveform, frame_length, frame_overlap)
+        num_frames = frames.shape[0]
 
-        if start is not None:  # handle case when speech continues to the end
-            boundaries.append((start, round(len(waveform) / sr, 4)))
+        energy = np.zeros(num_frames)
+        classes = np.zeros(num_frames, dtype=int)
 
-        return  self._merge_boundaries(boundaries=boundaries, close_th=150)
+        for k in range(num_frames):
+            frame = frames[k]
+            energy[k] = np.sum(frame**2)
+            classes[k] = self.__classify(energy[k])
+
+        boundaries = self.__create_boundaries(classes, frame_length, frame_overlap, sr)
+        return self._merge_boundaries(boundaries=boundaries, close_th=close_th)
+
+    def __classify(self, energy: float) -> int:
+        # classify the frame
+        # 0 – noise, 1 – voice
+        return 0 if energy < self.low_energy else 1
+
+    @staticmethod
+    def __buffer_waveform(
+        waveform: np.array, frame_length: int, overlap: int
+    ) -> np.ndarray:
+        # split the signal into overlapping frames.
+        step = frame_length - overlap
+        num_frames = int(np.floor((len(waveform) - overlap) / step))
+        frames = np.empty((num_frames, frame_length))
+        for i in range(num_frames):
+            start = i * step
+            frames[i] = waveform[start : start + frame_length]
+        return frames
+
+    @staticmethod
+    def __create_boundaries(
+        classes: np.array, frame_length: int, frame_overlap: int, sr: int
+    ) -> list[tuple[float, float]]:
+        boundaries = []
+        frame_step = frame_length - frame_overlap
+        num_frames = len(classes)
+        i = 0
+        while i < num_frames:
+            if classes[i] != 0:
+                start_frame = i
+                while i < num_frames and classes[i] != 0:
+                    i += 1
+                end_frame = i - 1
+                start_time = start_frame * frame_step / sr
+                end_time = end_frame * frame_step / sr + frame_length / sr
+                boundaries.append((start_time, end_time))
+            else:
+                i += 1
+
+        return boundaries
