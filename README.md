@@ -8,3 +8,7 @@ To create a virtual environment after cloning this repository, you need to run t
 
 - ```uv venv```
 
+
+ ### Linters
+
+```pre-commit run --all-files```

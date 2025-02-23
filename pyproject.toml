@@ -4,6 +4,25 @@ version = "0.1.0"
 description = "Audio Signal Processing course at IASA"
 authors = [ "Kate Kovalchuk <kovalchuk.pn@ucu.edu.ua>" ]
 readme = "README.md"
+<<<<<<< HEAD
+=======
+requires-python = ">=3.10"
+dependencies = [
+    "kaggle==1.6.3",
+    "librosa==0.9.2",
+    "notebook==7.3.2",
+    "numpy==1.23.4",
+    "pre-commit==4.1.0",
+    "pyannote-audio==3.3.2",
+    "pyloudnorm==0.1.1",
+    "scipy==1.9.3",
+    "soxr==0.5.0",
+    "torch==2.5.0",
+    "torchaudio==2.5.0",
+    "webrtcvad==2.0.10",
+    "zff-vad",
+]
+>>>>>>> d49cacbe3fa24ba073de0e97c2922962faa48c2c
 
 [tool.poetry.dependencies]
 python = ">=3.9.0,<3.12"

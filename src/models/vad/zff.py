@@ -5,7 +5,9 @@ from models.vad.base import BaseVAD
 
 
 class ZffVAD(BaseVAD):
-    def _get_boundaries(self, audio_path: str, *args) -> list[tuple[float, float]]:
+    def _get_boundaries(
+        self, audio_path: str, close_th: int = 450, *args
+    ) -> list[tuple[float, float]]:
         """
         Zero frequency filter from paper https://arxiv.org/abs/2206.13420
 
@@ -23,4 +25,4 @@ class ZffVAD(BaseVAD):
         boundaries = utils.smooth_decision(boundaries, sr)
         segments = utils.sample2time(waveform, sr, boundaries)
         segments = [(item[0], item[1]) for item in segments]
-        return self._merge_boundaries(boundaries=segments, close_th=150)
+        return self._merge_boundaries(boundaries=segments, close_th=close_th)
