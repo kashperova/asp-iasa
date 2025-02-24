@@ -37,29 +37,29 @@ root/
 ___
 models:
 
-energy.py  - counts the energy of the frame and classifies whether there is speech or not based on its amount
-k_means.py - For each chunk, it is determined whether there is a signal or not based on the features “mfcc”, “spectral_centroid”, “zcr”, “spectral_flux”, “rms”, and their average value
-silero.py - the code uses the Silero model to determine whether there is speech in the audio segment or not
-speechbrain.py - uses a speechbrain model that handles small and large windows. First, it calculates the probabilities for segments, whether there is speech or not, then it calculates the potential speech boundaries, calculates the energy for a part of the audio, and if it is sufficient, it is a chunk with speech. Then all the chunks with speech are merged. 
-zff.py - minimizes or eliminates the zero frequency
+- energy.py  - counts the energy of the frame and classifies whether there is speech or not based on its amount
+- k_means.py - For each chunk, it is determined whether there is a signal or not based on the features “mfcc”, “spectral_centroid”, “zcr”, “spectral_flux”, “rms”, and their average value
+- silero.py - the code uses the Silero model to determine whether there is speech in the audio segment or not
+- speechbrain.py - uses a speechbrain model that handles small and large windows. First, it calculates the probabilities for segments, whether there is speech or not, then it calculates the potential speech --boundaries, calculates the energy for a part of the audio, and if it is sufficient, it is a chunk with speech. Then all the chunks with speech are merged. 
+- zff.py - minimizes or eliminates the zero frequency
 ___
 
 ___
 utils:
 
-metrics.py - calculates metrics to verify correct speech detection in audio
-singleton.py - guarantees that only one instance of the object will exist during the entire program execution time
-wav_utils.py - returns sample rate, duration, normalizes audio, and filters it
+- metrics.py - calculates metrics to verify correct speech detection in audio
+- singleton.py - guarantees that only one instance of the object will exist during the entire program execution time
+- wav_utils.py - returns sample rate, duration, normalizes audio, and filters it
 ___
 
 ___
 features:
 
-mfcc - mel-frequency cepstal coefficients
-spectral_centroid - mean value of audio spectra 
-zcr - zero crossing rate
-spectral_flux  - rate of change of the signal spectrum 
-rms - root mean square - calculates mean energy of a signal
+- mfcc - mel-frequency cepstal coefficients
+- spectral_centroid - mean value of audio spectra 
+- zcr - zero crossing rate
+- spectral_flux  - rate of change of the signal spectrum 
+- rms - root mean square - calculates mean energy of a signal
 ___
 
 ### results (audio-lab1.ipynb)
@@ -73,7 +73,6 @@ ___
 | 1 |  80 Гц | 7.7% (7.6729) | 
 | 1 |  90 Гц | 8.2% (8.2068) | 
 | 1 |  100 Гц | 8.1% (8.0870)|
-
 | 2 |  60 Гц | 30.5% (30.4734) |
 | 2 |  80 Гц | 8.0% (7.9940) |
 | 2 |  90 Гц | 8.2% (8.1589) |
