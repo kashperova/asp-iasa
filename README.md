@@ -26,9 +26,9 @@ root/
   |           | ------ audio-lab1.ipynb
   |
   | ------ src/                                            | ------ energy.py  
-  |         |                     |  ----- vad  ---------- | ------ k_means.py
-  |         | ----- models ------ |                        | ------ silero.py
-  |         | ----- utils  ------ |  ----- metrics.py      | ------ speechbrain.py 
+  |         |                     |  ----- vad/  ---------- | ------ k_means.py
+  |         | ----- models/ ------ |                        | ------ silero.py
+  |         | ----- utils/  ------ |  ----- metrics.py      | ------ speechbrain.py 
   |                               |  ----- singleton.py    | ------ zff.py 
   |                               |  ----- wav_utils.py                         
   |  
