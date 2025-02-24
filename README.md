@@ -23,7 +23,7 @@ root/
   |
   | ------ notebooks/
   |           | ------ hw1.ipynb
-  |           | ------ audio-lab1.ipynb
+  |           | ------ audio-lab-1-final_1.ipynb
   |
   | ------ src/                                            | ------ energy.py  
   |         |                     |  ----- vad/  ---------- | ------ k_means.py
