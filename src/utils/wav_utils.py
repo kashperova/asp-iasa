@@ -3,8 +3,7 @@ from typing import Union
 import numpy as np
 import torch
 import torchaudio
-import pyloudnorm as pyln
-from torch import Tensor
+from scipy.signal import wiener
 from scipy import signal
 
 
@@ -38,20 +37,6 @@ def resample_file(
     torchaudio.save(save_path, waveform.to(torch.float32), sample_rate=target_sr)
 
 
-def normalize_loudness(
-    waveform: np.array, sr: int, target_lufs: float = -23.0, to_tensor: bool = False
-) -> Union[np.array, Tensor]:
-    meter = pyln.Meter(sr)
-    loudness = meter.integrated_loudness(waveform)
-    gain = target_lufs - loudness
-    normalized_audio = waveform * (10 ** (gain / 20))
-
-    if to_tensor:
-        normalized_audio = torch.tensor(normalized_audio)
-
-    return normalized_audio
-
-
 def apply_filters(
     waveform: np.array, sr: int, highpass: bool = True, lowpass: bool = True
 ) -> np.array:
@@ -66,3 +51,7 @@ def apply_filters(
         waveform = signal.filtfilt(b, a, waveform)
 
     return waveform
+
+
+def apply_wiener(waveform: np.array, win_length: int = 7):
+    return wiener(waveform, mysize=win_length)
