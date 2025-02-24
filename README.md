@@ -15,7 +15,7 @@ To create a virtual environment after cloning this repository, you need to run t
 
 
 ### repository structure 
-
+```
 root/
   |
   | ------ .misk/tests/
@@ -33,7 +33,7 @@ root/
   |                               |  ----- wav_utils.py                         
   |  
   | --- dependencies  
-
+```
 ___
 models:
 
