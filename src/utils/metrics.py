@@ -1,6 +1,3 @@
-from typing import Callable
-
-import numpy as np
 from pyannote.core import Annotation, Segment
 from pyannote.metrics.base import BaseMetric
 from pyannote.metrics.detection import (
@@ -9,38 +6,6 @@ from pyannote.metrics.detection import (
     DetectionRecall,
     DetectionPrecision,
 )
-from sklearn.metrics import (
-    confusion_matrix,
-    f1_score,
-    recall_score,
-    precision_score,
-    accuracy_score,
-)
-
-
-def evaluate_clustering(
-    vad_labels: np.ndarray, cluster_labels: np.ndarray, align_func: Callable = None
-):
-    aligned_labels = (
-        align_func(cluster_labels, vad_labels)
-        if align_func is not None
-        else cluster_labels
-    )
-
-    accuracy = accuracy_score(vad_labels, aligned_labels)
-    precision = precision_score(vad_labels, aligned_labels, zero_division=0)
-    recall = recall_score(vad_labels, aligned_labels, zero_division=0)
-    f1 = f1_score(vad_labels, aligned_labels, zero_division=0)
-    conf_matrix = confusion_matrix(vad_labels, aligned_labels)
-
-    return {
-        "accuracy": accuracy,
-        "precision": precision,
-        "recall": recall,
-        "f1_score": f1,
-        "confusion_matrix": conf_matrix,
-        "aligned_labels": aligned_labels,
-    }
 
 
 def annotate_vad_results(results: list[dict]) -> Annotation:

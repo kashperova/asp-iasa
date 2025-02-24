@@ -11,7 +11,7 @@ class BaseVAD(metaclass=Singleton):
         raise NotImplementedError
 
     def get_boundaries(
-        self, audio_path: str, *args, **kwargs
+        self, audio_path: str, round_factor: int = None, *args, **kwargs
     ) -> list[dict[str, Union[float, str]]]:
         """
         extract boundaries with speech labels in such a format:
@@ -23,6 +23,9 @@ class BaseVAD(metaclass=Singleton):
         ---------
         audio_path: str
             path to .wav file
+
+        round_factor: int
+            factor to round preds
 
         returns
         ---------
